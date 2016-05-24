@@ -54,9 +54,12 @@ var ReactTelephoneInput = React.createClass({
     mixins: [onClickOutside],
     getInitialState() {
         var inputNumber = this.props.initialValue || this.props.value || '';
+        console.log(inputNumber);
         var selectedCountryGuess = this.guessSelectedCountry(inputNumber.replace(/\D/g, ''));
+        console.log(selectedCountryGuess+' selected country guess');
         var selectedCountryGuessIndex = findIndex(allCountries, selectedCountryGuess);
         var formattedNumber = this.formatNumber(inputNumber.replace(/\D/g, ''), selectedCountryGuess ? selectedCountryGuess.format : null);
+        console.log(formattedNumber);
         var preferredCountries = [];
 
         preferredCountries = this.props.preferredCountries.map(iso2 => {
