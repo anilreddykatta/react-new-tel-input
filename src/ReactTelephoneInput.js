@@ -111,9 +111,35 @@ var ReactTelephoneInput = React.createClass({
     getValue() {
         return this.getNumber();
     },
+    componentWillReceiveProps(nextProps) {
+        var inputNumber = nextProps.initialValue || nextProps.value || '';
+        console.log(inputNumber);
+        var selectedCountryGuess = this.guessSelectedCountry(inputNumber.replace(/\D/g, ''));
+        console.log(selectedCountryGuess+' selected country guess');
+        var selectedCountryGuessIndex = findIndex(allCountries, selectedCountryGuess);
+        var formattedNumber = this.formatNumber(inputNumber.replace(/\D/g, ''), selectedCountryGuess ? selectedCountryGuess.format : null);
+        console.log(formattedNumber);
+        var preferredCountries = [];
+
+        preferredCountries = nextProps.preferredCountries.map(iso2 => {
+            return allCountriesIso2Lookup.hasOwnProperty(iso2) ? allCountries[allCountriesIso2Lookup[iso2]] : null;
+        }).filter(function (val) {
+            return val !== null;
+        });
+
+        this.setState({
+            preferredCountries: preferredCountries,
+            selectedCountry: selectedCountryGuess,
+            highlightCountryIndex: selectedCountryGuessIndex,
+            formattedNumber: formattedNumber,
+            showDropDown: false,
+            queryString: '',
+            freezeSelection: false,
+            debouncedQueryStingSearcher: debounce(this.searchCountry, 100)
+        });
+    },
     componentDidMount() {
         document.addEventListener('keydown', this.handleKeydown);
-
         this._cursorToEnd(true);
         if(typeof this.props.onChange === 'function') {
             this.props.onChange(this.state.formattedNumber, this.state.selectedCountry);
